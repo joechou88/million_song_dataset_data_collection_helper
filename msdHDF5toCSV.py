@@ -73,10 +73,15 @@ class Song:
         self.year = None
 
     def displaySongCount(self):
-        print "Total Song Count %i" % Song.songCount
+        print("Total Song Count %i" % Song.songCount)
 
     def displaySong(self):
-        print "ID: %s" % self.id   
+        print("ID: %s" % self.id)
+    
+    def bytes_to_str(x):
+        if isinstance(x, bytes):
+            return x.decode('utf-8', errors='ignore')
+        return str(x)
 
 
 def main():
@@ -108,7 +113,7 @@ def main():
                 csvAttributeList[i] = csvAttributeList[i].lower()
 
             for attribute in csvAttributeList:
-                # print "Here is the attribute: " + attribute + " \n"
+                # print("Here is the attribute: " + attribute + " \n")
 
 
                 if attribute == 'AlbumID'.lower():
@@ -149,9 +154,9 @@ def main():
                     sys.exit()
                 else:
                     prompt = True
-                    print "=============="
-                    print "I believe there has been an error with the input."
-                    print "=============="
+                    print("==============")
+                    print("I believe there has been an error with the input.")
+                    print("==============")
                     break
 
                 csvRowString += ","
@@ -186,21 +191,21 @@ def main():
     #Set the basedir here, the root directory from which the search
     #for files stored in a (hierarchical data structure) will originate
     basedir = "." # "." As the default means the current directory
-    ext = ".H5" #Set the extension here. H5 is the extension for HDF5 files.
+    ext = ".h5" #Set the extension here. H5 is the extension for HDF5 files.
     #################################################
 
     #FOR LOOP
     for root, dirs, files in os.walk(basedir):        
         files = glob.glob(os.path.join(root,'*'+ext))
         for f in files:
-            print f
+            print(f)
 
             songH5File = hdf5_getters.open_h5_file_read(f)
             song = Song(str(hdf5_getters.get_song_id(songH5File)))
 
             testDanceability = hdf5_getters.get_danceability(songH5File)
-            # print type(testDanceability)
-            # print ("Here is the danceability: ") + str(testDanceability)
+            # print(type(testDanceability))
+            # print(("Here is the danceability: ") + str(testDanceability))
 
             song.artistID = str(hdf5_getters.get_artist_id(songH5File))
             song.albumID = str(hdf5_getters.get_release_7digitalid(songH5File))
@@ -222,11 +227,11 @@ def main():
             song.title = str(hdf5_getters.get_title(songH5File))
             song.year = str(hdf5_getters.get_year(songH5File))
 
-            #print song count
+            #print(song count)
             csvRowString += str(song.songCount) + ","
 
             for attribute in csvAttributeList:
-                # print "Here is the attribute: " + attribute + " \n"
+                # print("Here is the attribute: " + attribute + " \n")
 
                 if attribute == 'AlbumID'.lower():
                     csvRowString += song.albumID
@@ -259,17 +264,17 @@ def main():
                 elif attribute == 'KeySignature'.lower():
                     csvRowString += song.keySignature
                 elif attribute == 'KeySignatureConfidence'.lower():
-                    # print "key sig conf: " + song.timeSignatureConfidence                                 
+                    # print("key sig conf: " + song.timeSignatureConfidence)                              
                     csvRowString += song.keySignatureConfidence
                 elif attribute == 'SongID'.lower():
                     csvRowString += "\"" + song.id + "\""
                 elif attribute == 'Tempo'.lower():
-                    # print "Tempo: " + song.tempo
+                    # print("Tempo: " + song.tempo)
                     csvRowString += song.tempo
                 elif attribute == 'TimeSignature'.lower():
                     csvRowString += song.timeSignature
                 elif attribute == 'TimeSignatureConfidence'.lower():
-                    # print "time sig conf: " + song.timeSignatureConfidence                                   
+                    # print("time sig conf: " + song.timeSignatureConfidence)                                
                     csvRowString += song.timeSignatureConfidence
                 elif attribute == 'Title'.lower():
                     csvRowString += "\"" + song.title + "\""
