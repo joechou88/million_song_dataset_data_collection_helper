@@ -1,3 +1,11 @@
-/Million_Song_Dataset.csv
+*.csv
 SQLite_DB/*.db
 *.h5
+*.arff
+
+/_pycache_
+/examples
+
+# This only apply if we get all .h5 files
+hdf5_getters.py
+msdHDF5toCSV.py
