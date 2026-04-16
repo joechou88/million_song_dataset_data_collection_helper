@@ -3,7 +3,7 @@ SQLite_DB/*.db
 *.h5
 *.arff
 
-/_pycache_
+*.pyc
 /examples
 
 # This only apply if we get all .h5 files
