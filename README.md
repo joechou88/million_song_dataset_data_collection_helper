@@ -1,5 +1,6 @@
 ## Fetch SQLite Database data to csv file
 - Download .db files from http://millionsongdataset.com/pages/getting-dataset/ and put them under `SQLite_DB` folder
+  
   <img width="478" height="317" alt="image" src="https://github.com/user-attachments/assets/3445ad94-5661-4b56-ac4b-5ea52261e6cd" />
 
 - Execute `merge_song_dataset_from_SQLite.py` to get the output .csv file
