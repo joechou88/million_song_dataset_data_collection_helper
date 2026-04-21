@@ -1,5 +1,5 @@
 *.csv
-SQLite_DB/*.db
+*.db
 *.h5
 *.arff
 
