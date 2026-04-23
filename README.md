@@ -46,4 +46,6 @@ The following scripts are used to transform the raw Million Song Dataset (MSD) f
     - Merge all features in `MSD_with_all_features.db` using `track_id` as primary key.
     - Use partition tables to bypass SQLite’s 2000-column limitation.
     - Remove missing values: Only songs that have **complete feature sets** are exported to csv, so that we don't need to do missing value imputation.
+      <img width="397" height="40" alt="螢幕擷取畫面 2026-04-23 231127" src="https://github.com/user-attachments/assets/9fa91faf-7e3e-4bef-89aa-22fd9657e7dc" />
+
 - **Output**: `flattened_MSD_with_all_features.csv` with single table  
