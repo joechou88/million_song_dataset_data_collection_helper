@@ -17,6 +17,8 @@ def validate_paths(config):
     return True
 
 def main():
+
+    # Data Integration
     config = MSDConfig()
     if not validate_paths(config):
         return
@@ -26,6 +28,9 @@ def main():
 
     flatten = Flatten(config)
     flatten.flatten_and_remove_missing_values()
+
+    # Data Preprocessing
+    
 
 if __name__ == "__main__":
     main()

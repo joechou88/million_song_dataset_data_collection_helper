@@ -7,7 +7,7 @@ class Flatten:
         self.conn = sqlite3.connect(self.config.db_path)
         self.cursor = self.conn.cursor()
 
-    def flatten_and_remove_missing_values(self):        
+    def flatten_and_remove_missing_values(self):       
         print(f"--- Start flattening and remove observations with missing values ---")
 
         self.cursor.execute("PRAGMA journal_mode = OFF")
@@ -22,56 +22,52 @@ class Flatten:
             return
         print(f"  Number of tables in MSD_with_all_features.db ready to be flattened: {len(all_tables)}")
 
-        # 2. 初始表設定 (使用不同的命名空間以免覆蓋之前的 axis=1 版本)
-        target_base = "msd_flat_axis0_part"
-        current_part = 1
-        target_table = f"{target_base}{current_part}"
+        # Since SQLite has a default column limit of 2000, which is defined at compile time and cannot be easily modified at runtime, we partition into multiple tables to bypass the limit
+        merged_table_base_name = "merged_partition"
+        merged_table_id = 1
+        merged_table = f"{merged_table_base_name}{merged_table_id}"
         
-        # 刪除舊的同名暫存表
-        self.cursor.execute(f"SELECT name FROM sqlite_master WHERE name LIKE '{target_base}%'")
-        old_parts = [r[0] for r in self.cursor.fetchall()]
-        for op in old_parts: self.cursor.execute(f"DROP TABLE {op}")
+        # Delete tmp table generated from last time
+        self.cursor.execute(f"SELECT name FROM sqlite_master WHERE name LIKE '{merged_table_base_name}%'")
+        outdated_merged_table = [r[0] for r in self.cursor.fetchall()]
+        for table in outdated_merged_table: self.cursor.execute(f"DROP TABLE {table}")
         self.conn.commit()
 
-        print(f"  正在初始化第一個分區 {target_table}...")
-        self.cursor.execute(f"CREATE TABLE {target_table} AS SELECT * FROM songs")
-        self.cursor.execute(f"CREATE UNIQUE INDEX idx_{target_table}_tid ON {target_table}(track_id)")
+        print(f"  Processing SQLite table {merged_table}...")
+        self.cursor.execute(f"CREATE TABLE {merged_table} AS SELECT * FROM songs")
+        self.cursor.execute(f"CREATE UNIQUE INDEX idx_{merged_table}_tid ON {merged_table}(track_id)")
         self.conn.commit()
 
-        # 3. 逐一合併 (過程中不刪除欄位)
         for table in all_tables:
-            print(f"  正在合併所有特徵: {table} ...")
+            print(f"  Merging features from table {table} ...")
             self.cursor.execute(f"PRAGMA table_info({table})")
             cols = [c[1] for c in self.cursor.fetchall() if c[1].lower() != 'track_id']
-            
-            prefix = table.replace("features_", "f_").replace("all_sample_properties", "prop")
-            select_cols = ", ".join([f't."{c}" as "{prefix}_{c}"' for c in cols])
+            select_cols = ", ".join([f't."{c}"' for c in cols])
             
             success = False
             while not success:
-                temp_table = f"{target_table}_new"
+                temp_table = f"{merged_table}_tmp"
                 self.cursor.execute(f"DROP TABLE IF EXISTS {temp_table}")
-                sql = f"CREATE TABLE {temp_table} AS SELECT m.*, {select_cols} FROM {target_table} m LEFT JOIN (SELECT * FROM \"{table}\" GROUP BY track_id) t ON m.track_id = t.track_id"
+                sql = f"CREATE TABLE {temp_table} AS SELECT m.*, {select_cols} FROM {merged_table} m LEFT JOIN (SELECT * FROM \"{table}\" GROUP BY track_id) t ON m.track_id = t.track_id"
                 try:
                     self.cursor.execute(sql)
-                    self.cursor.execute(f"DROP TABLE {target_table}")
-                    self.cursor.execute(f"ALTER TABLE {temp_table} RENAME TO {target_table}")
-                    self.cursor.execute(f"CREATE UNIQUE INDEX idx_{target_table}_tid ON {target_table}(track_id)")
+                    self.cursor.execute(f"DROP TABLE {merged_table}")
+                    self.cursor.execute(f"ALTER TABLE {temp_table} RENAME TO {merged_table}")
+                    self.cursor.execute(f"CREATE UNIQUE INDEX idx_{merged_table}_tid ON {merged_table}(track_id)")
                     self.conn.commit()
                     success = True
                 except sqlite3.OperationalError as e:
                     if "too many columns" in str(e).lower():
-                        current_part += 1
-                        target_table = f"{target_base}{current_part}"
-                        print(f"    [!] 欄位過多，開啟新分區 {target_table}")
-                        self.cursor.execute(f"CREATE TABLE {target_table} AS SELECT track_id FROM songs")
-                        self.cursor.execute(f"CREATE UNIQUE INDEX idx_{target_table}_tid ON {target_table}(track_id)")
+                        merged_table_id += 1
+                        merged_table = f"{merged_table_base_name}{merged_table_id}"
+                        print(f"    Column limit 2000 reached. Start a new partition table {merged_table}")
+                        self.cursor.execute(f"CREATE TABLE {merged_table} AS SELECT track_id FROM songs")
+                        self.cursor.execute(f"CREATE UNIQUE INDEX idx_{merged_table}_tid ON {merged_table}(track_id)")
                         self.conn.commit()
                     else: raise e
 
-        # 4. 整合匯出為大表 CSV (並在此時執行 axis=0 dropna)
-        print(f"\n--- 正在匯出整合大表 (執行 dropna axis=0): {self.config.flattened_output_csv_name} ---")
-        active_parts = [f"{target_base}{i}" for i in range(1, current_part + 1)]
+        print(f"\n--- Start exporting to csv: {self.config.flattened_output_csv_name} ---")
+        active_parts = [f"{merged_table_base_name}{i}" for i in range(1, merged_table_id + 1)]
 
         all_headers = []
         for ptable in active_parts:
@@ -86,11 +82,11 @@ class Flatten:
             
             self.cursor.execute("SELECT track_id FROM songs")
             track_ids = [r[0] for r in self.cursor.fetchall()]
-            total = len(track_ids)
-            saved_count = 0
+            total_observations = len(track_ids)
+            number_of_non_missing_observations = 0
             
             batch_size = 1000
-            for start_idx in range(0, total, batch_size):
+            for start_idx in range(0, total_observations, batch_size):
                 batch_ids = track_ids[start_idx : start_idx + batch_size]
                 id_placeholder = ",".join(["?"] * len(batch_ids))
                 batch_rows = {tid: [] for tid in batch_ids}
@@ -106,12 +102,12 @@ class Flatten:
                     row = batch_rows[tid]
                     if None not in row:   # Remove observations with missing values  
                         writer.writerow(row)
-                        saved_count += 1
+                        number_of_non_missing_observations += 1
                 
                 if (start_idx // batch_size) % 10 == 0:
-                    print(f"    Read Process: {min(start_idx + batch_size, total)} / {total} ... (目前保留歌曲: {saved_count} 筆)", end='\r')
+                    print(f"    Read Process: {min(start_idx + batch_size, total_observations)} / {total_observations} ... (目前保留歌曲: {number_of_non_missing_observations} 筆)", end='\r')
 
         print(f"\n\n--- Complete flattening and remove observations with missing values ---")
-        print(f"Number of observations before flattening: {total}")
-        print(f"Number of observations after flattening: {saved_count}")
+        print(f"Number of observations before flattening: {total_observations}")
+        print(f"Number of observations after flattening: {number_of_non_missing_observations}")
         self.conn.close()

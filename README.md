@@ -43,9 +43,7 @@ The following scripts are used to transform the raw Million Song Dataset (MSD) f
 
 - **Objective**: Flattens the multi-table database (`MSD_with_all_features.db`) into a single table in .csv format (`flattened_MSD_with_all_features.csv`) with no missing values.
 - **Key Features**:
-    - **Comprehensive Merging**: Combines all available feature tables (e.g., rhythm, timbre, chroma) and song properties into one wide row per `track_id`.
-    - **Remove missing values**: Only songs that have **complete feature sets** (no `NULL` values in any column) are exported. This ensures the final dataset is ready for high-performance modeling without further imputation.
-    - **Performance Optimizations**: Uses `PRAGMA` settings and batch-based row fetching to handle the massive data volume efficiently.
-- **Output**: `flattened_MSD_with_all_features.csv` with single table
-- **Result Metrics**: Upon completion, the script reports the total songs processed and the final count of songs meeting the "complete features" criteria.
-  
+    - Merge all features in `MSD_with_all_features.db` using `track_id` as primary key.
+    - Use partition tables to bypass SQLite’s 2000-column limitation.
+    - Remove missing values: Only songs that have **complete feature sets** are exported to csv, so that we don't need to do missing value imputation.
+- **Output**: `flattened_MSD_with_all_features.csv` with single table  

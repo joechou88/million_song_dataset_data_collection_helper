@@ -55,7 +55,7 @@ class MSDDatasetIntegrator:
 
         arff_files = sorted(glob.glob(os.path.join(self.config.arff_dir, "*.arff")))
         for arff_path in arff_files:
-            table_name = "features_" + os.path.splitext(os.path.basename(arff_path))[0].replace("-", "_").lower()
+            table_name = os.path.splitext(os.path.basename(arff_path))[0].replace("-", "_").lower()
             self.cursor.execute(f"SELECT name FROM sqlite_master WHERE type='table' AND name='{table_name}'")
             if self.cursor.fetchone(): continue
 
