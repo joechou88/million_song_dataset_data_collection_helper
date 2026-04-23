@@ -86,7 +86,7 @@ class Flatten:
             writer = csv.writer(f)
             writer.writerow(all_headers)
             
-            self.cursor.execute("SELECT track_id FROM songs")
+            self.cursor.execute(f"SELECT track_id FROM songs WHERE track_id IS NOT NULL AND {exclude_missing_values_in_songs}")
             track_ids = [r[0] for r in self.cursor.fetchall()]
             total_observations = len(track_ids)
             number_of_non_missing_observations = 0
