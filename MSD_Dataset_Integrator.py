@@ -53,13 +53,6 @@ class MSDDatasetIntegrator:
             print("Table 'songs' is ready. Skip importing.")
         self.conn.commit()
 
-        self.cursor.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='all_sample_properties'")
-        if not self.cursor.fetchone():
-            self.import_csv_to_db(self.config.property_path, "all_sample_properties")
-        else:
-            print("Table 'all_sample_properties' is ready. Skip importing.")
-        self.conn.commit()
-
         arff_files = sorted(glob.glob(os.path.join(self.config.arff_dir, "*.arff")))
         for arff_path in arff_files:
             table_name = "features_" + os.path.splitext(os.path.basename(arff_path))[0].replace("-", "_").lower()

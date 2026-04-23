@@ -35,7 +35,6 @@ The following scripts are used to transform the raw Million Song Dataset (MSD) f
 - **Objective**: integrating `Million_Song_Dataset.csv` with `Million_Song_Dataset_Benchmarks/*.arff`.
 - **Key Functions**:
     - Write `Million_Song_Dataset.csv` into the `songs` table (Primary table).
-    - Write `All_sample_properties.csv` into the `all_sample_properties` table.
     - Write `Million_Song_Dataset_Benchmarks/*.arff` into separate feature tables (prefixed with `features_`, one table per arff file).
     - Automatically creates indices on track_id for all tables to facilitate future joins.
 - **Output**: A relational database `MSD_with_all_features.db` with many tables.
