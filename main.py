@@ -6,7 +6,6 @@ from flatten_and_remove_missing_values import Flatten
 def validate_paths(config):
     required_items = {
         "Million_Song_Dataset.csv": config.csv_path,
-        "All_sample_properties.csv": config.property_path,
         "Million_Song_Dataset_Benchmarks": config.arff_dir,
     }
 

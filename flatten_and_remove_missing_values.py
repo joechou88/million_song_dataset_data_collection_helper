@@ -15,7 +15,7 @@ class Flatten:
         self.cursor.execute("PRAGMA temp_store = FILE")
         self.cursor.execute("PRAGMA cache_size = -2000000")
 
-        self.cursor.execute("SELECT name FROM sqlite_master WHERE type='table' AND name LIKE 'features_%'")
+        self.cursor.execute("SELECT name FROM sqlite_master WHERE type='table' AND name != 'songs'")
         all_tables = [t[0] for t in self.cursor.fetchall()]
         if not all_tables:
             print("[DBNotFound]: MSD_with_all_features.db is not ready. Please exectue MSD_Dataset_Integrator.py first.")
