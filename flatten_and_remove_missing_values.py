@@ -15,26 +15,32 @@ class Flatten:
         self.cursor.execute("PRAGMA temp_store = FILE")
         self.cursor.execute("PRAGMA cache_size = -2000000")
 
+        # Delete tmp table generated from last time
+        merged_table_base_name = "merged_partition"
+        self.cursor.execute(f"SELECT name FROM sqlite_master WHERE name LIKE '{merged_table_base_name}%'")
+        outdated_merged_table = [r[0] for r in self.cursor.fetchall()]
+        for table in outdated_merged_table:
+            self.cursor.execute(f"DROP TABLE IF EXISTS {table}")
+        self.conn.commit()
+
         self.cursor.execute("SELECT name FROM sqlite_master WHERE type='table' AND name != 'songs'")
         all_tables = [t[0] for t in self.cursor.fetchall()]
+
         if not all_tables:
             print("[DBNotFound]: MSD_with_all_features.db is not ready. Please exectue MSD_Dataset_Integrator.py first.")
             return
         print(f"  Number of tables in MSD_with_all_features.db ready to be flattened: {len(all_tables)}")
 
         # Since SQLite has a default column limit of 2000, which is defined at compile time and cannot be easily modified at runtime, we partition into multiple tables to bypass the limit
-        merged_table_base_name = "merged_partition"
         merged_table_id = 1
         merged_table = f"{merged_table_base_name}{merged_table_id}"
-        
-        # Delete tmp table generated from last time
-        self.cursor.execute(f"SELECT name FROM sqlite_master WHERE name LIKE '{merged_table_base_name}%'")
-        outdated_merged_table = [r[0] for r in self.cursor.fetchall()]
-        for table in outdated_merged_table: self.cursor.execute(f"DROP TABLE {table}")
-        self.conn.commit()
 
         print(f"  Processing SQLite table {merged_table}...")
-        self.cursor.execute(f"CREATE TABLE {merged_table} AS SELECT * FROM songs")
+
+        self.cursor.execute("PRAGMA table_info(songs)")
+        cols = [c[1] for c in self.cursor.fetchall() if c[1] != "track_id"]
+        exclude_missing_values_in_songs = " AND ".join([f'"{col}" IS NOT NULL' for col in cols])
+        self.cursor.execute(f"CREATE TABLE {merged_table} AS SELECT * FROM songs WHERE track_id IS NOT NULL AND {exclude_missing_values_in_songs}")
         self.cursor.execute(f"CREATE UNIQUE INDEX idx_{merged_table}_tid ON {merged_table}(track_id)")
         self.conn.commit()
 
