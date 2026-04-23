@@ -9,3 +9,6 @@
 # This only apply if we get all .h5 files
 hdf5_getters.py
 msdHDF5toCSV.py
+
+# Experimenting but failed files
+manage_msd_db.py

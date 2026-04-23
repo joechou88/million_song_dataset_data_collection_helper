@@ -1,28 +1,31 @@
 import os
-from rebuild_msd_database import MSDDatasetIntegrator
-from manage_msd_db import MSDQueryTool
+from config import MSDConfig
+from MSD_Dataset_Integrator import MSDDatasetIntegrator
+from flatten_and_remove_missing_values import Flatten
+
+def validate_paths(config):
+    required_items = {
+        "Million_Song_Dataset.csv": config.csv_path,
+        "All_sample_properties.csv": config.property_path,
+        "Million_Song_Dataset_Benchmarks": config.arff_dir,
+    }
+
+    for name, path in required_items.items():
+        if not os.path.exists(path):
+            print(f"[FileNotFoundError] Missing '{name}' at: {path}")
+            return False
+    return True
 
 def main():
-    integrator = MSDDatasetIntegrator()
-    required_items = {
-        "Million_Song_Dataset.csv": integrator.csv_path,
-        "All_sample_properties.csv": integrator.property_path,
-        "Million_Song_Dataset_Benchmarks": integrator.arff_dir,
-        "SQLite_DB": integrator.side_db_dir
-    }
-    for name, path in required_items.items():
-        if not os.path.isfile(path):
-            print(f"[FileNotFoundError] Please input file/folder '{name}' at: {path}")
-            return
+    config = MSDConfig()
+    if not validate_paths(config):
+        return
+    
+    integrator = MSDDatasetIntegrator(config)
+    integrator.integrate()  # Skip this with given MSD_with_all_features.db
 
-    # 3. 初始化查詢工具
-    print("正在初始化 MSDQueryTool ...")
-    query_tool = MSDQueryTool(db_path=DB_PATH) 
-    print("工具初始化成功！")
-
-    # 4. 接下來就可以呼叫工具的內部方法進行各種查詢分析了
-    # 例如: result = query_tool.some_query_function("某首歌的 track_id")
-    # print(result)
+    flatten = Flatten(config)
+    flatten.flatten_and_remove_missing_values()
 
 if __name__ == "__main__":
     main()

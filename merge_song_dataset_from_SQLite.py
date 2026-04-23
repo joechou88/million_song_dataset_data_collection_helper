@@ -19,8 +19,8 @@ df_meta_term_sim = df_meta_term_sim.drop(columns=['target'])    # artist_similar
 output_filename = "Million_Song_Dataset.csv"
 df_meta_term_sim.to_csv(output_filename, index=False, encoding='utf-8-sig')
 
-print(f"--- SQLite_DB 串連成功 ---")
-print(f"最終資料列數 (Rows): {len(df_meta_term_sim)}")
+print(f"--- Complete integration for SQLite_DB ---")
+print(f"Number of rows output: {len(df_meta_term_sim)}")
 
 conn_meta.close()
 conn_term.close()
