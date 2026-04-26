@@ -13,10 +13,6 @@
 ---
 ## Python Scripts
 
-### Data Integration and Preparation
-
-The following scripts are used to transform the raw Million Song Dataset (MSD) files into a structured database and a flattened, cleaned dataset for machine learning models.
-
 #### 1-1. Data Integration (`MSD_SQLite_Integrator.py`)
 
 - **Objective**: merge csv dataset from 3 SQLite databases:
