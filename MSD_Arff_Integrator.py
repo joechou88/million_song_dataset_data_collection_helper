@@ -3,7 +3,7 @@ import csv
 import sqlite3
 import glob
 
-class MSDDatasetIntegrator:
+class MSDArffIntegrator:
     def __init__(self, config):
         self.config = config
         self.conn = sqlite3.connect(self.config.db_path)
@@ -45,7 +45,7 @@ class MSDDatasetIntegrator:
             self.cursor.execute(f'CREATE INDEX "idx_{table_name}_track_id" ON {table_name} (track_id)')
 
     def integrate(self):
-        print(f"--- Start integrating Million Song Dataset ---")
+        print(f"--- Start integrating Million_Song_Dataset.csv with Million_Song_Dataset_Benchmarks/*.arff ---")
         self.cursor.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='songs'")
         if not self.cursor.fetchone():
             self.import_csv_to_db(self.config.csv_path, "songs")
@@ -92,4 +92,4 @@ class MSDDatasetIntegrator:
 
         self.conn.commit()
         self.conn.close()
-        print("--- Complete integrating Million_Song_Dataset.csv with Million_Song_Dataset_Benchmarks/*.arff ---")
+        print("--- Complete integrating Million_Song_Dataset.csv with Million_Song_Dataset_Benchmarks/*.arff ---\n")

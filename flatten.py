@@ -7,7 +7,7 @@ class Flatten:
         self.conn = sqlite3.connect(self.config.db_path)
         self.cursor = self.conn.cursor()
 
-    def flatten_and_remove_missing_values(self):       
+    def flatten(self):       
         print(f"--- Start flattening and remove observations with missing values ---")
 
         self.cursor.execute("PRAGMA journal_mode = OFF")
@@ -88,11 +88,11 @@ class Flatten:
             
             self.cursor.execute(f"SELECT track_id FROM songs WHERE track_id IS NOT NULL AND {exclude_missing_values_in_songs}")
             track_ids = [r[0] for r in self.cursor.fetchall()]
-            total_observations = len(track_ids)
-            number_of_non_missing_observations = 0
+            total_observations_in_SQLite = len(track_ids)
+            total_observations_in_CSV = 0
             
             batch_size = 1000
-            for start_idx in range(0, total_observations, batch_size):
+            for start_idx in range(0, total_observations_in_SQLite, batch_size):
                 batch_ids = track_ids[start_idx : start_idx + batch_size]
                 id_placeholder = ",".join(["?"] * len(batch_ids))
                 batch_rows = {tid: [] for tid in batch_ids}
@@ -106,14 +106,13 @@ class Flatten:
                 
                 for tid in batch_ids:
                     row = batch_rows[tid]
-                    if None not in row:   # Remove observations with missing values  
-                        writer.writerow(row)
-                        number_of_non_missing_observations += 1
+                    writer.writerow(row)
+                    total_observations_in_CSV += 1
                 
                 if (start_idx // batch_size) % 10 == 0:
-                    print(f"    Read Process: {min(start_idx + batch_size, total_observations)} / {total_observations} ... (目前保留歌曲: {number_of_non_missing_observations} 筆)", end='\r')
+                    print(f"    Read Process: {min(start_idx + batch_size, total_observations_in_SQLite)} / {total_observations_in_SQLite} ... ({total_observations_in_CSV} of observations have been written in CSV)", end='\r')
 
-        print(f"\n\n--- Complete flattening and remove observations with missing values ---")
-        print(f"Number of observations before flattening: {total_observations}")
-        print(f"Number of observations after flattening: {number_of_non_missing_observations}")
+        print(f"\n\n--- Complete flattening and written SQLite into CSV ---")
+        print(f"Number of observations originally in SQLite: {total_observations_in_SQLite}")
+        print(f"Number of observations written into CSV: {total_observations_in_CSV}\n")
         self.conn.close()

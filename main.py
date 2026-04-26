@@ -1,7 +1,9 @@
 import os
 from config import MSDConfig
-from MSD_Dataset_Integrator import MSDDatasetIntegrator
-from flatten_and_remove_missing_values import Flatten
+from MSD_SQLite_Integrator import MSDSqliteIntegrator
+from MSD_Arff_Integrator import MSDArffIntegrator
+from flatten import Flatten
+from preprocess import Preprocess
 
 def validate_paths(config):
     required_items = {
@@ -22,14 +24,18 @@ def main():
     if not validate_paths(config):
         return
     
-    integrator = MSDDatasetIntegrator(config)
-    integrator.integrate()  # Skip this with given MSD_with_all_features.db
+    sqlite_integrator = MSDSqliteIntegrator(config)
+    sqlite_integrator.integrate()
+    
+    arff_integrator = MSDArffIntegrator(config)
+    arff_integrator.integrate()  # Skip this with given MSD_with_all_features.db
 
     flatten = Flatten(config)
-    flatten.flatten_and_remove_missing_values()
+    flatten.flatten()
 
     # Data Preprocessing
-    
+    preprocess = Preprocess(config)
+    preprocess.remove_missing()
 
 if __name__ == "__main__":
     main()
