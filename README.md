@@ -8,7 +8,7 @@
 
 ### Academic Institution: .arff
 - Download .arff files from https://www.ifs.tuwien.ac.at/mir/msd/download.html, unzip and put them under `Million_Song_Dataset_Benchmarks` folder
-  <img width="1256" height="377" alt="image" src="https://github.com/user-attachments/assets/a0a98120-a4dc-4d07-8ee1-285e05ec9c34" />
+  <img width="1253" height="368" alt="image" src="https://github.com/user-attachments/assets/69baa055-813e-40cf-87b8-d424f6f697c1" />
 
 ---
 ## Python Scripts
