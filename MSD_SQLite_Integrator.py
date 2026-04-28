@@ -1,11 +1,17 @@
 import sqlite3
 import pandas as pd
+import os
 
 class MSDSqliteIntegrator:
     def __init__(self, config):
         self.config = config
 
     def integrate(self):
+        if os.path.exists(self.config.csv_name):
+            print(f"File '{self.config.csv_name}' already exists. Skipping SQLite integration.")
+            print("Please remove the file if you want to rerun MSD_SQLite_Integrator.py\n")
+            return
+        
         print("--- Start integrating Million_Song_Dataset.csv with SQLite_DB/*.db ---")
         
         conn_meta = sqlite3.connect(self.config.meta_db)

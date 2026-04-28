@@ -12,6 +12,7 @@ class MSDConfig:
         self.csv_name = "Million_Song_Dataset.csv"
         self.arff_dir_name = "Million_Song_Dataset_Benchmarks"
         self.flattened_output_csv_name = "flattened_MSD_with_all_features.csv"
+        self.preprocessed_output_csv_name = "MSD_with_all_features_preprocessed.csv"
 
         self.meta_db = os.path.join(self.base_dir, self.db_dir_name, self.meta_name)
         self.term_db = os.path.join(self.base_dir, self.db_dir_name, self.term_name)
@@ -20,3 +21,4 @@ class MSDConfig:
         self.csv_path = os.path.join(self.base_dir, self.csv_name)
         self.arff_dir = os.path.join(self.base_dir, self.arff_dir_name)
         self.flattened_output_csv_path = os.path.join(self.base_dir, self.flattened_output_csv_name)
+        self.preprocessed_output_csv_path = os.path.join(self.base_dir, self.preprocessed_output_csv_name)

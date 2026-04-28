@@ -1,5 +1,6 @@
 import csv
 import sqlite3
+import os
 
 class Flatten:
     def __init__(self, config):
@@ -7,7 +8,12 @@ class Flatten:
         self.conn = sqlite3.connect(self.config.db_path)
         self.cursor = self.conn.cursor()
 
-    def flatten(self):       
+    def flatten(self):
+        if os.path.exists(self.config.flattened_output_csv_path):
+            print(f"File '{self.config.flattened_output_csv_name}' already exists. Skipping flattening.")
+            print(f"Please remove the file manually if you want to rerun flatten.py\n")
+            return
+        
         print(f"--- Start flattening and remove observations with missing values ---")
 
         self.cursor.execute("PRAGMA journal_mode = OFF")

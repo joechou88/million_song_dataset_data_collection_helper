@@ -45,6 +45,11 @@ class MSDArffIntegrator:
             self.cursor.execute(f'CREATE INDEX "idx_{table_name}_track_id" ON {table_name} (track_id)')
 
     def integrate(self):
+        if os.path.exists(self.config.db_path):
+            print(f"Database '{self.config.db_name}' already exists. Skipping ARFF integration.")
+            print("Please remove the database file if you want to rerun MSD_Arff_Integrator.py\n")
+            return
+        
         print(f"--- Start integrating Million_Song_Dataset.csv with Million_Song_Dataset_Benchmarks/*.arff ---")
         self.cursor.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='songs'")
         if not self.cursor.fetchone():
