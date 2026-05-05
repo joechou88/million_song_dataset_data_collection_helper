@@ -48,4 +48,8 @@
 - **Objective**: 
 - **Key Features**:
     - Remove missing values: Only songs that have **complete feature sets** are exported to csv, so that we don't need to do missing value imputation.
+    - Categorical variables encoding: Use One-hot Encoding to 
+    - Remove outliers: Use Isolation Forest to prune 5% of the data as outliers, preventing extreme values from skewing the regression coefficients.
+    - Continuous variables scaling: Use Robust Scaling to
+    - Mitigate multicollinearity: Use Adaptive Elastic Net to effectively selects the most significant variables
 - **Output**: 
