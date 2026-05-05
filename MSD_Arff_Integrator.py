@@ -6,8 +6,6 @@ import glob
 class MSDArffIntegrator:
     def __init__(self, config):
         self.config = config
-        self.conn = sqlite3.connect(self.config.db_path)
-        self.cursor = self.conn.cursor()
 
     def get_arff_attributes(self, filepath):
         attributes = []
@@ -49,7 +47,9 @@ class MSDArffIntegrator:
             print(f"Database '{self.config.db_name}' already exists. Skipping ARFF integration.")
             print("Please remove the database file if you want to rerun MSD_Arff_Integrator.py\n")
             return
-        
+
+        self.conn = sqlite3.connect(self.config.db_path)
+        self.cursor = self.conn.cursor()
         print(f"--- Start integrating {self.config.merged_csv_name} with Million_Song_Dataset_Benchmarks/*.arff ---")
         self.cursor.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='songs'")
         if not self.cursor.fetchone():
