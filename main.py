@@ -10,8 +10,8 @@ from merge_h5_with_SQLite import MergeH5WithSQLite
 
 def validate_paths(config):
     required_items = {
-        "Million_Song_Dataset.csv": config.csv_path,
-        "msd_summary_file.csv":     config.h5_to_csv_path,
+        "h5_DB": config.h5_dir_path,
+        "SQLite_DB": config.sqlite_dir_path,
         "Million_Song_Dataset_Benchmarks": config.arff_dir,
     }
 

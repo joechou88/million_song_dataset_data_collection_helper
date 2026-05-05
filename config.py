@@ -19,6 +19,8 @@ class MSDConfig:
         self.preprocessed_pkl_name = "MSD_with_all_features.pkl"
         self.preprocessed_output_csv_name = "MSD_with_all_features_preprocessed.csv"
 
+        self.h5_dir_path    = os.path.join(self.base_dir, self.h5_dir_name)
+        self.sqlite_dir_path = os.path.join(self.base_dir, self.db_dir_name)
         self.h5_db_path = os.path.join(self.base_dir, self.h5_dir_name, self.h5_name)
         self.h5_to_csv_path = os.path.join(self.base_dir, self.h5_to_csv_name)
         self.meta_db_path = os.path.join(self.base_dir, self.db_dir_name, self.meta_name)
