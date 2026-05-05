@@ -14,9 +14,9 @@ class MSDSqliteIntegrator:
         
         print("--- Start integrating Million_Song_Dataset.csv with SQLite_DB/*.db ---")
         
-        conn_meta = sqlite3.connect(self.config.meta_db)
-        conn_term = sqlite3.connect(self.config.term_db)
-        conn_sim  = sqlite3.connect(self.config.sim_db)
+        conn_meta = sqlite3.connect(self.config.meta_db_path)
+        conn_term = sqlite3.connect(self.config.term_db_path)
+        conn_sim  = sqlite3.connect(self.config.sim_db_path)
 
         df_meta = pd.read_sql_query("SELECT * FROM songs", conn_meta)
         df_term = pd.read_sql_query("SELECT * FROM artist_term", conn_term)

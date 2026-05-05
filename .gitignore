@@ -2,6 +2,7 @@
 *.db
 *.h5
 *.arff
+*.pkl
 
 *.pyc
 /examples
