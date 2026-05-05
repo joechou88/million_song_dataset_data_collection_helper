@@ -50,10 +50,10 @@ class MSDArffIntegrator:
             print("Please remove the database file if you want to rerun MSD_Arff_Integrator.py\n")
             return
         
-        print(f"--- Start integrating Million_Song_Dataset.csv with Million_Song_Dataset_Benchmarks/*.arff ---")
+        print(f"--- Start integrating {self.config.merged_csv_name} with Million_Song_Dataset_Benchmarks/*.arff ---")
         self.cursor.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='songs'")
         if not self.cursor.fetchone():
-            self.import_csv_to_db(self.config.csv_path, "songs")
+            self.import_csv_to_db(self.config.merged_csv_path, "songs")
         else:
             print("Table 'songs' is ready. Skip importing.")
         self.conn.commit()
@@ -97,4 +97,4 @@ class MSDArffIntegrator:
 
         self.conn.commit()
         self.conn.close()
-        print("--- Complete integrating Million_Song_Dataset.csv with Million_Song_Dataset_Benchmarks/*.arff ---\n")
+        print(f"--- Complete integrating {self.config.merged_csv_name} with Million_Song_Dataset_Benchmarks/*.arff ---\n")

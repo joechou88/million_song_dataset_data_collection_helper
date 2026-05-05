@@ -13,6 +13,7 @@ class MSDConfig:
         self.sim_name  = "artist_similarity.db"
         self.db_name = "MSD_with_all_features.db"
         self.csv_name = "Million_Song_Dataset.csv"
+        self.merged_csv_name = "msd_summary_file_merged.csv"
         self.arff_dir_name = "Million_Song_Dataset_Benchmarks"
         self.flattened_output_csv_name = "flattened_MSD_with_all_features.csv"
         self.preprocessed_pkl_name = "MSD_with_all_features.pkl"
@@ -25,6 +26,7 @@ class MSDConfig:
         self.sim_db_path  = os.path.join(self.base_dir, self.db_dir_name, self.sim_name)
         self.db_path = os.path.join(self.base_dir, self.db_name)
         self.csv_path = os.path.join(self.base_dir, self.csv_name)
+        self.merged_csv_path = os.path.join(self.base_dir, self.merged_csv_name)
         self.arff_dir = os.path.join(self.base_dir, self.arff_dir_name)
         self.flattened_output_csv_path = os.path.join(self.base_dir, self.flattened_output_csv_name)
         self.preprocessed_pkl_path = os.path.join(self.base_dir, self.preprocessed_pkl_name)

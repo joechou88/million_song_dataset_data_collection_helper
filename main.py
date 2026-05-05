@@ -6,10 +6,12 @@ from MSD_SQLite_Integrator import MSDSqliteIntegrator
 from MSD_Arff_Integrator import MSDArffIntegrator
 from flatten import Flatten
 from preprocess import Preprocess
+from merge_h5_with_SQLite import MergeH5WithSQLite
 
 def validate_paths(config):
     required_items = {
         "Million_Song_Dataset.csv": config.csv_path,
+        "msd_summary_file.csv":     config.h5_to_csv_path,
         "Million_Song_Dataset_Benchmarks": config.arff_dir,
     }
 
@@ -25,12 +27,15 @@ def main():
     config = MSDConfig()
     if not validate_paths(config):
         return
-    
+
     h5_integrator = MSDH5Integrator(config)
     h5_integrator.integrate()
 
     sqlite_integrator = MSDSqliteIntegrator(config)
     sqlite_integrator.integrate()
+
+    merger = MergeH5WithSQLite(config)
+    merger.merge()
     
     arff_integrator = MSDArffIntegrator(config)
     arff_integrator.integrate()  # Skip this with given MSD_with_all_features.db
