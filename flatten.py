@@ -86,8 +86,9 @@ class Flatten:
         for ptable in active_parts:
             self.cursor.execute(f"PRAGMA table_info({ptable})")
             cols = [c[1] for c in self.cursor.fetchall()]
-            if not all_headers: all_headers = cols
-            else: all_headers += [c for c in cols if c != 'track_id']
+            ordered = ['track_id'] + [c for c in cols if c != 'track_id']
+            if not all_headers: all_headers = ordered
+            else: all_headers += [c for c in ordered if c != 'track_id']
 
         with open(self.config.flattened_output_csv_path, 'w', newline='', encoding='utf-8') as f:
             writer = csv.writer(f)
@@ -104,7 +105,11 @@ class Flatten:
                 id_placeholder = ",".join(["?"] * len(batch_ids))
                 batch_rows = {tid: [] for tid in batch_ids}
                 for idx_p, ptable in enumerate(active_parts):
-                    self.cursor.execute(f"SELECT * FROM {ptable} WHERE track_id IN ({id_placeholder})", batch_ids)
+                    self.cursor.execute(f"PRAGMA table_info({ptable})")
+                    ptable_cols = [c[1] for c in self.cursor.fetchall()]
+                    non_tid = ", ".join([f'"{c}"' for c in ptable_cols if c != 'track_id'])
+                    col_select = f'track_id, {non_tid}' if non_tid else 'track_id'
+                    self.cursor.execute(f"SELECT {col_select} FROM {ptable} WHERE track_id IN ({id_placeholder})", batch_ids)
                     res_dict = {r[0]: r[1:] for r in self.cursor.fetchall()}
                     for tid in batch_ids:
                         data = list(res_dict.get(tid, []))
