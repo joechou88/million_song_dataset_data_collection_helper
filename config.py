@@ -16,6 +16,7 @@ class MSDConfig:
         self.merged_csv_name = "msd_summary_file_merged.csv"
         self.arff_dir_name = "Million_Song_Dataset_Benchmarks"
         self.flattened_output_csv_name = "flattened_MSD_with_all_features.csv"
+        self.head_flattened_output_csv_name = "head200_flattened_MSD_with_all_features.csv"
         self.preprocessed_pkl_name = "MSD_with_all_features.pkl"
         self.preprocessed_output_csv_name = "MSD_with_all_features_preprocessed.csv"
 
@@ -31,5 +32,6 @@ class MSDConfig:
         self.merged_csv_path = os.path.join(self.base_dir, self.merged_csv_name)
         self.arff_dir = os.path.join(self.base_dir, self.arff_dir_name)
         self.flattened_output_csv_path = os.path.join(self.base_dir, self.flattened_output_csv_name)
+        self.head_flattened_output_csv_path = os.path.join(self.base_dir, self.head_flattened_output_csv_name)
         self.preprocessed_pkl_path = os.path.join(self.base_dir, self.preprocessed_pkl_name)
         self.preprocessed_output_csv_path = os.path.join(self.base_dir, self.preprocessed_output_csv_name)
