@@ -6,7 +6,7 @@ class MSDH5Integrator:
         self.config = config
 
     def integrate(self):
-        columns_to_drop = ['genre', 'idx_artist_terms', 'idx_similar_artists']
+        columns_to_drop = ['genre', 'idx_artist_terms', 'idx_similar_artists','analyzer_version']
         with h5py.File(self.config.h5_db_path, 'r') as h5:
             total_songs = h5['metadata']['songs'].shape[0]
             chunk_size = 100000

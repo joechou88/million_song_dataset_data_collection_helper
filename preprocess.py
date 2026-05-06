@@ -3,9 +3,12 @@ import numpy as np
 from scipy.sparse import csr_matrix
 from sklearn.preprocessing import RobustScaler
 from sklearn.ensemble import IsolationForest
+from sklearn.ensemble import ExtraTreesRegressor
 from sklearn.linear_model import ElasticNet, Ridge
 from sklearn.feature_extraction.text import CountVectorizer
+from sklearn.experimental import enable_iterative_imputer
 from sklearn.impute import IterativeImputer
+from tqdm import tqdm
 
 class Preprocess:
     def __init__(self, config):
@@ -16,18 +19,34 @@ class Preprocess:
     def missing_values_imputation(self, df):
         numeric_columns = [column for column in df.select_dtypes(include=[np.number]).columns 
                            if column not in self.exclude_cols]
-        non_numeric_df = df.drop(columns=numeric_columns)
         rows_with_nan = df[numeric_columns].isna().any(axis=1).sum()
+        if rows_with_nan == 0:
+            print("No missing values detected.")
+            return df
 
-        multiple_imputation_model = IterativeImputer(max_iter=10, random_state=42)
-        imputed_numeric_matrix = multiple_imputation_model.fit_transform(df[numeric_columns])
-        imputed_numeric_df = pd.DataFrame(
-            imputed_numeric_matrix, 
-            columns=numeric_columns, 
-            index=df.index
+        columns_to_impute = df[numeric_columns].columns[df[numeric_columns].isna().any()].tolist()
+        max_iteration = 5
+        total_steps = len(columns_to_impute) * max_iteration
+        pbar = tqdm(total=total_steps, desc="MICE Process")
+        class TqdmEstimator(ExtraTreesRegressor):
+            def fit(self, X, y, **kwargs):
+                res = super().fit(X, y, **kwargs)
+                pbar.update(1)
+                return res
+        multiple_imputation_model = IterativeImputer(
+            estimator=TqdmEstimator(n_estimators=10, n_jobs=-1, random_state=42),
+            max_iter=max_iteration,
+            n_nearest_features=20, 
+            random_state=42,
+            verbose=0
         )
+        try:
+            imputed_numeric_matrix = multiple_imputation_model.fit_transform(df[numeric_columns])
+        finally:
+            pbar.close()
 
-        df_clean = pd.concat([non_numeric_df, imputed_numeric_df], axis=1)
+        df_clean = df.copy()
+        df_clean[numeric_columns] = imputed_numeric_matrix
         print(f"Imuted missing values for {rows_with_nan} Observations (Total: {len(df)}")
         return df_clean
 
