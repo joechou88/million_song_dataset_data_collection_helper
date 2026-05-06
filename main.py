@@ -43,46 +43,46 @@ def main():
     flatten = Flatten(config)
     flatten.flatten()
 
-    # preprocess_read_path = config.flattened_output_csv_path
-    # print(f"Loading data from: {preprocess_read_path}\n")
-    # df = pd.read_csv(preprocess_read_path)
-    # # Data Preprocessing
-    # preprocess = Preprocess(config)
-    # preprocess_current_path = os.path.splitext(config.preprocessed_pkl_path)[0]
+    preprocess_read_path = config.flattened_output_csv_path
+    print(f"Loading data from: {preprocess_read_path}\n")
+    df = pd.read_csv(preprocess_read_path)
+    # Data Preprocessing
+    preprocess = Preprocess(config)
+    preprocess_current_path = os.path.splitext(config.preprocessed_pkl_path)[0]
 
-    # print(f"--- Start removing missing values for {preprocess_read_path} ---")
-    # df = preprocess.remove_missing_values(df)
-    # current_path = preprocess_current_path + "_remove_missing_values.pkl"
-    # df.to_pickle(current_path)
-    # print(f"--- Complete removing missing values. Saved as {current_path} ---\n")
+    print(f"--- Start imputing missing values for {preprocess_read_path} ---")
+    df = preprocess.missing_values_imputation(df)
+    current_path = preprocess_current_path + "_missing_values_imputation.pkl"
+    df.to_pickle(current_path)
+    print(f"--- Complete imputing missing values. Saved as {current_path} ---\n")
 
-    # print("--- Start One-hot Encoding for categorical variables (term) ---")
-    # df = preprocess.encode_categorical_variables(df)
-    # current_path = preprocess_current_path + "_categorical_encoded.pkl"
-    # df.to_pickle(current_path)
-    # print(f"--- Complete One-hot Encoding. Saved as {current_path} ---\n")
+    print("--- Start One-hot Encoding for categorical variables (term) ---")
+    df = preprocess.encode_categorical_variables(df)
+    current_path = preprocess_current_path + "_categorical_encoded.pkl"
+    df.to_pickle(current_path)
+    print(f"--- Complete One-hot Encoding. Saved as {current_path} ---\n")
 
-    # print("--- Start Outlier Detection (Isolation Forest) ---")
-    # df = preprocess.remove_outliers(df)
-    # current_path = preprocess_current_path + "_remove_outliers.pkl"
-    # df.to_pickle(current_path)
-    # print(f"--- Outliers removed. Saved as {current_path} ---\n")
+    print("--- Start Outlier Detection (Isolation Forest) ---")
+    df = preprocess.remove_outliers(df)
+    current_path = preprocess_current_path + "_remove_outliers.pkl"
+    df.to_pickle(current_path)
+    print(f"--- Outliers removed. Saved as {current_path} ---\n")
 
-    # print("--- Start Scaling for continuous variables (Robust Scaler) ---")
-    # df = preprocess.scale_continuous_variables(df)
-    # current_path = preprocess_current_path + "_continuous_scaled.pkl"
-    # df.to_pickle(current_path)
-    # print(f"--- Complete Feature scaling with Robust Scaler. Saved as {current_path} ---\n")
+    print("--- Start Scaling for continuous variables (Robust Scaler) ---")
+    df = preprocess.scale_continuous_variables(df)
+    current_path = preprocess_current_path + "_continuous_scaled.pkl"
+    df.to_pickle(current_path)
+    print(f"--- Complete Feature scaling with Robust Scaler. Saved as {current_path} ---\n")
 
-    # print("--- Start Adaptive Elastic Net to mitigate multicollinearity problem ---")
-    # df = preprocess.adaptive_elastic_net(df)
-    # current_path = preprocess_current_path + "_adaptive_elastic_net.pkl"
-    # df.to_pickle(current_path)
-    # print(f"--- Complete Adaptive Elastic Net. Final file saved as {current_path} ---\n")
+    print("--- Start Adaptive Elastic Net to mitigate multicollinearity problem ---")
+    df = preprocess.adaptive_elastic_net(df)
+    current_path = preprocess_current_path + "_adaptive_elastic_net.pkl"
+    df.to_pickle(current_path)
+    print(f"--- Complete Adaptive Elastic Net. Final file saved as {current_path} ---\n")
 
-    # final_preprocessed_path = config.preprocessed_output_csv_path
-    # df.to_csv(final_preprocessed_path, index=False)
-    # print(f"--- All preprocessing steps completed. Saved as: {final_preprocessed_path} ---")
+    final_preprocessed_path = config.preprocessed_output_csv_path
+    df.to_csv(final_preprocessed_path, index=False)
+    print(f"--- All preprocessing steps completed. Saved as: {final_preprocessed_path} ---")
 
 if __name__ == "__main__":
     main()

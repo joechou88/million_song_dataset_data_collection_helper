@@ -5,6 +5,7 @@ from sklearn.preprocessing import RobustScaler
 from sklearn.ensemble import IsolationForest
 from sklearn.linear_model import ElasticNet, Ridge
 from sklearn.feature_extraction.text import CountVectorizer
+from sklearn.impute import IterativeImputer
 
 class Preprocess:
     def __init__(self, config):
@@ -12,9 +13,22 @@ class Preprocess:
         self.target_col = 'artist_hotttnesss'
         self.exclude_cols = ['track_7digitalid', 'year', self.target_col]
 
-    def remove_missing_values(self, df):
-        df_clean = df.dropna()
-        print(f"Rows before: {len(df)}, after: {len(df_clean)}")
+    def missing_values_imputation(self, df):
+        numeric_columns = [column for column in df.select_dtypes(include=[np.number]).columns 
+                           if column not in self.exclude_cols]
+        non_numeric_df = df.drop(columns=numeric_columns)
+        rows_with_nan = df[numeric_columns].isna().any(axis=1).sum()
+
+        multiple_imputation_model = IterativeImputer(max_iter=10, random_state=42)
+        imputed_numeric_matrix = multiple_imputation_model.fit_transform(df[numeric_columns])
+        imputed_numeric_df = pd.DataFrame(
+            imputed_numeric_matrix, 
+            columns=numeric_columns, 
+            index=df.index
+        )
+
+        df_clean = pd.concat([non_numeric_df, imputed_numeric_df], axis=1)
+        print(f"Imuted missing values for {rows_with_nan} Observations (Total: {len(df)}")
         return df_clean
 
     def encode_categorical_variables(self, df):
