@@ -19,12 +19,12 @@ class Preprocess:
     def missing_values_imputation(self, df):
         numeric_columns = [column for column in df.select_dtypes(include=[np.number]).columns 
                            if column not in self.exclude_cols]
-        rows_with_nan = df[numeric_columns].isna().any(axis=1).sum()
-        if rows_with_nan == 0:
+        if not df[numeric_columns].isnull().values.any():
             print("No missing values detected.")
             return df
+        rows_with_nan = df[numeric_columns].isnull().sum().sum()
 
-        columns_to_impute = df[numeric_columns].columns[df[numeric_columns].isna().any()].tolist()
+        columns_to_impute = [col for col in numeric_columns if df[col].isnull().any()]
         max_iteration = 5
         total_steps = len(columns_to_impute) * max_iteration
         pbar = tqdm(total=total_steps, desc="MICE Process")
@@ -41,14 +41,13 @@ class Preprocess:
             verbose=0
         )
         try:
-            imputed_numeric_matrix = multiple_imputation_model.fit_transform(df[numeric_columns])
+            imputed_numeric_matrix = multiple_imputation_model.fit_transform(df[numeric_columns].values)
         finally:
             pbar.close()
 
-        df_clean = df.copy()
-        df_clean[numeric_columns] = imputed_numeric_matrix
+        df[numeric_columns] = imputed_numeric_matrix
         print(f"Imuted missing values for {rows_with_nan} Observations (Total: {len(df)}")
-        return df_clean
+        return df
 
     def encode_categorical_variables(self, df):
         df['term'] = df['term'].astype(str)
