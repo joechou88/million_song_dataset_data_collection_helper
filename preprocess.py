@@ -4,6 +4,7 @@ from scipy.sparse import csr_matrix
 from sklearn.preprocessing import RobustScaler
 from sklearn.ensemble import IsolationForest
 from sklearn.ensemble import ExtraTreesRegressor
+from sklearn.linear_model import BayesianRidge
 from sklearn.linear_model import ElasticNet, Ridge
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.experimental import enable_iterative_imputer
@@ -22,26 +23,28 @@ class Preprocess:
         if not df[numeric_columns].isnull().values.any():
             print("No missing values detected.")
             return df
+        df[numeric_columns] = df[numeric_columns].apply(lambda x: x.sparse.to_dense() if hasattr(x, 'sparse') else x)
         rows_with_nan = df[numeric_columns].isnull().sum().sum()
 
         columns_to_impute = [col for col in numeric_columns if df[col].isnull().any()]
         max_iteration = 5
         total_steps = len(columns_to_impute) * max_iteration
         pbar = tqdm(total=total_steps, desc="MICE Process")
-        class TqdmEstimator(ExtraTreesRegressor):
+        class TqdmEstimator(BayesianRidge):
             def fit(self, X, y, **kwargs):
                 res = super().fit(X, y, **kwargs)
                 pbar.update(1)
                 return res
         multiple_imputation_model = IterativeImputer(
-            estimator=TqdmEstimator(n_estimators=10, n_jobs=-1, random_state=42),
+            estimator=TqdmEstimator(),
             max_iter=max_iteration,
             n_nearest_features=20, 
             random_state=42,
             verbose=0
         )
         try:
-            imputed_numeric_matrix = multiple_imputation_model.fit_transform(df[numeric_columns].values)
+            data_to_impute = df[numeric_columns].values.astype(np.float32)
+            imputed_numeric_matrix = multiple_imputation_model.fit_transform(data_to_impute)
         finally:
             pbar.close()
 

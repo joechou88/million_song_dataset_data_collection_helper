@@ -47,11 +47,11 @@ def main():
     preprocess = Preprocess(config)
     preprocess_current_path = os.path.splitext(config.preprocessed_pkl_path)[0]
     preprocess_steps = [
-        ("One-hot Encoding for categorical variables (term)", "_categorical_encoded.pkl", preprocess.encode_categorical_variables),
         ("Outlier Detection (Isolation Forest)", "_remove_outliers.pkl", preprocess.remove_outliers),
+        ("Scaling for continuous variables (Robust Scaler)", "_continuous_scaled.pkl", preprocess.scale_continuous_variables),
         ("Missing Values Imputation (MICE)", "_missing_values_imputation.pkl", preprocess.missing_values_imputation),
-        ("Adaptive Elastic Net", "_adaptive_elastic_net.pkl", preprocess.adaptive_elastic_net),
-        ("Scaling for continuous variables (Robust Scaler)", "_continuous_scaled.pkl", preprocess.scale_continuous_variables)
+        ("One-hot Encoding for categorical variables (term)", "_categorical_encoded.pkl", preprocess.encode_categorical_variables),
+        ("Adaptive Elastic Net", "_adaptive_elastic_net.pkl", preprocess.adaptive_elastic_net)    
     ]
     df = None
     start_step_idx = 0

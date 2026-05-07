@@ -18,7 +18,7 @@
 
 #### 1-1. Data Integration (`MSD_h5_Integrator.py`)
 
-- **Objective**: convert `msd_summary_file.h5` to `msd_summary_file.csv`
+- **Objective**: fetch and save 53 features from `msd_summary_file.h5`
 - **Key Functions**:
   - Fetch data from 3 primary groups in `msd_summary_file.h5`: analysis, metadata, and musicbrainz
   - Remove following columns in advance:
