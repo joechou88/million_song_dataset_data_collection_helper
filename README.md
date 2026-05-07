@@ -39,7 +39,7 @@
   - Then merge with `artist_similarity` using `artist_id`
 - **Output**: `Million_Song_Dataset.csv` with single table
 
-We then execute `merge_h5_with_SQLite.py` to merge the 2 csv files above.
+We then execute `merge_h5_with_SQLite.py` to merge the `msd_summary_file.csv` and `Million_Song_Dataset.csv` into `msd_summary_file_merged.csv`.
 
 #### 1-3. Data Integration (`MSD_Arff_Integrator.py`)
 
