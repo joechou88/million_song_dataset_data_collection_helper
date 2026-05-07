@@ -60,7 +60,7 @@ class Preprocess:
             columns=[f"term_{c}" for c in vectorizer.get_feature_names_out()]
         ).astype(pd.SparseDtype("int8", 0))
         df_encoded = pd.concat([df.drop('term', axis=1), term_dummies], axis=1)
-        print(f"Rows before: {len(df)}, after: {len(df_encoded)}. New feature count: {df_encoded.shape[1]}")
+        print(f"Columns added: {df_encoded.shape[1]}")
         return df_encoded
 
     def remove_outliers(self, df):

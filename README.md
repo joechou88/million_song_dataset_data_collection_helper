@@ -45,11 +45,13 @@
 
 #### 3. Preprocessing (`preprocess.py`)
 
-- **Objective**: 
+- **Objective**: Transform `flattened_MSD_with_all_features.csv` into a clean, high-quality dataset optimized for machine learning.
 - **Key Features**:
-    - Remove missing values: Only songs that have **complete feature sets** are exported to csv, so that we don't need to do missing value imputation.
-    - Categorical variables encoding: Use One-hot Encoding to 
-    - Remove outliers: Use Isolation Forest to prune 5% of the data as outliers, preventing extreme values from skewing the regression coefficients.
-    - Continuous variables scaling: Use Robust Scaling to
+    - Missing values imputation: Implement MICE to capture complex relationships between variables and fill gaps.
+    - Categorical variables encoding: Use One-hot Encoding to transform the `term` column into multiple binary features.
+    - Remove outliers: Use Isolation Forest to prune 5% of the data as outliers, preventing extreme values from skewing regression coefficients.
+    - Continuous variables scaling: Applies Robust Scaling to center the non-binary numeric features and scales them based on the Interquartile Range (IQR)
     - Mitigate multicollinearity: Use Adaptive Elastic Net to effectively selects the most significant variables
 - **Output**: 
+    - Intermediate: Multiple .pkl files for each stage of preprocessing.
+    - Final: `MSD_with_all_features_preprocessed.csv`
