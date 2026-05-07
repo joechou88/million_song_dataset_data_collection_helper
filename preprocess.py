@@ -49,7 +49,7 @@ class Preprocess:
             pbar.close()
 
         df[numeric_columns] = imputed_numeric_matrix
-        print(f"Imuted missing values for {rows_with_nan} Observations (Total: {len(df)}")
+        print(f"Imuted missing values for {rows_with_nan} empty cells")
         return df
 
     def encode_categorical_variables(self, df):
@@ -83,6 +83,11 @@ class Preprocess:
         return df
 
     def adaptive_elastic_net(self, df):
+        if df[self.target_col].isnull().any():
+            original_count = len(df)
+            df = df.dropna(subset=[self.target_col])
+            print(f"Dropped {original_count - len(df)} rows due to missing target values.")
+
         X = df.select_dtypes(include=[np.number]).drop(columns=self.exclude_cols)
         y = df[self.target_col]
         initial_feature_count = X.shape[1]
