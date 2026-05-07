@@ -1,8 +1,11 @@
 ## Data Source
 
+### Million Song Dataset: h5
+- Download .h5 file from http://millionsongdataset.com/pages/getting-dataset/ and put them under `h5_DB` folder
+
+
 ### Million Song Dataset: SQLite
 - Download .db files from http://millionsongdataset.com/pages/getting-dataset/ and put them under `SQLite_DB` folder
-  
   <img width="478" height="317" alt="image" src="https://github.com/user-attachments/assets/3445ad94-5661-4b56-ac4b-5ea52261e6cd" />
 
 
@@ -13,20 +16,32 @@
 ---
 ## Python Scripts
 
-#### 1-1. Data Integration (`MSD_SQLite_Integrator.py`)
+#### 1-1. Data Integration (`MSD_h5_Integrator.py`)
+
+- **Objective**: convert `msd_summary_file.h5` to `msd_summary_file.csv`
+- **Key Functions**:
+  - Fetch data from 3 primary groups in `msd_summary_file.h5`: analysis, metadata, and musicbrainz
+  - Remove following columns in advance:
+    - genre: all missing values
+    - analyzer_version: all missing values
+    - idx_artist_terms: replace with `term` from `artist_term.db` later
+    - idx_similar_artists: replace with `similar` from `artist_similarity.db` later
+- **Output**: `msd_summary_file.csv`
+
+#### 1-2. Data Integration (`MSD_SQLite_Integrator.py`)
 
 - **Objective**: merge csv dataset from 3 SQLite databases:
   - `track_metadata.db`
   - `artist_term.db`
   - `artist_similarity.db`
-
 - **Key Functions**:
   - Merge `songs` with `artist_term` using `artist_id` as the primary key
   - Then merge with `artist_similarity` using `artist_id`
-
 - **Output**: `Million_Song_Dataset.csv` with single table
 
-#### 1-2. Data Integration (`MSD_Arff_Integrator.py`)
+We then execute `merge_h5_with_SQLite.py` to merge the 2 csv files above.
+
+#### 1-3. Data Integration (`MSD_Arff_Integrator.py`)
 
 - **Objective**: integrating `Million_Song_Dataset.csv` with `Million_Song_Dataset_Benchmarks/*.arff`.
 - **Key Functions**:
