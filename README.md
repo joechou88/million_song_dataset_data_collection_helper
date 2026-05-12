@@ -66,7 +66,6 @@ We then execute `merge_h5_with_SQLite.py` to merge the `msd_summary_file.csv` an
     - Categorical variables encoding: Use One-hot Encoding to transform the `term` column into multiple binary features.
     - Remove outliers: Use Isolation Forest to prune 5% of the data as outliers, preventing extreme values from skewing regression coefficients.
     - Continuous variables scaling: Applies Robust Scaling to center the non-binary numeric features and scales them based on the Interquartile Range (IQR)
-    - Mitigate multicollinearity: Use Adaptive Elastic Net to effectively selects the most significant variables
 - **Output**: 
     - Intermediate: Multiple .pkl files for each stage of preprocessing.
     - Final: `MSD_with_all_features_preprocessed.csv`
